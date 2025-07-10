@@ -9,6 +9,10 @@ class StockNotesApp:
         self.root.title("Stock Notes Manager")
         self.root.geometry("1600x900")  # Adjusted for 2K resolution
 
+        # Ensure required directories exist
+        os.makedirs('short_term', exist_ok=True)
+        os.makedirs('long_term', exist_ok=True)
+
         # Apply a theme
         self.style = ttk.Style()
         # Import the tcl file with the tk.call method
@@ -126,9 +130,9 @@ class StockNotesApp:
         else:
             note_date = simpledialog.askstring("Note Date", "Enter the date for the note (DD-MM-YYYY):")
             try:
-                #change the date format to string month instead of number
-                note_date = datetime.strptime(note_date, "%d-%m-%Y").strftime("%d %B %Y")
+                # Validate date format and then reformat to string month
                 datetime.strptime(note_date, "%d-%m-%Y")  # Validate date format
+                note_date = datetime.strptime(note_date, "%d-%m-%Y").strftime("%d %B %Y")
                 self.default_date.set(note_date)  # Optionally update the default_date
             except ValueError:
                 messagebox.showerror("Error", "Invalid date format. Please use DD-MM-YYYY.")
@@ -281,10 +285,6 @@ class StockNotesApp:
         
         # Button for adding a new note for this stock code
         button_frame = ttk.Frame(notes_window)  # Frame to hold the button, for layout purposes
-        button_frame.pack(padx=10, pady=10, fill=tk.X, side=tk.BOTTOM)
-
-            # Frame for buttons
-        button_frame = ttk.Frame(notes_window)
         button_frame.pack(padx=10, pady=10, fill=tk.X, side=tk.BOTTOM)
         
         # Button to manually refresh the notes after adding

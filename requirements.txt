@@ -1,0 +1,3 @@
+# requirements.txt
+# No external dependencies required for core functionality
+# Uses only Python standard library (tkinter, os, datetime)
