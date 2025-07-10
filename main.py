@@ -342,16 +342,48 @@ class StockNotesApp:
             self.add_note_for_stock_code(stock_code.upper())
 
     def add_note_for_stock_code(self, stock_code):
-        filename_short_term = "short_term/" + stock_code + ".txt"
-        filename_long_term = "long_term/" + stock_code + ".txt"
-        
-        if not os.path.exists(filename_short_term) or not os.path.exists(filename_long_term):
-            messagebox.showerror("Error", "Notes for this stock do not exist.")
+        if self.mode.get() == "undefined":
+            messagebox.showerror("Error", "Mode is undefined. Please set the mode first.")
+            return
+
+        # Ensure stock code is provided
+        if not stock_code:
+            messagebox.showerror("Error", "No stock code provided.")
             return
         
-        note = simpledialog.askstring("Add Note", "Enter your note:")
-        if note:
-            self.process_note_addition(stock_code, note)
+        # Asking for the note
+        note = simpledialog.askstring("Add Note", "Enter your note for " + stock_code + ":")
+        if not note:  # User cancelled or entered an empty note
+            return
+
+        # Preparing filenames based on mode
+        filename = f"{'short_term' if self.mode.get() == 'short' else 'long_term'}/{stock_code.upper()}.txt"
+        if not os.path.exists(filename):
+            messagebox.showerror("Error", f"Notes file for {stock_code} does not exist.")
+            return
+
+        # Date handling
+        if self.date_flag.get():
+            note_date = self.default_date.get()
+        else:
+            note_date = simpledialog.askstring("Note Date", "Enter the date for the note (DD-MM-YYYY):")
+            try:
+                #change the date format to string month instead of number
+                note_date = datetime.strptime(note_date, "%d-%m-%Y").strftime("%d %B %Y")
+                datetime.strptime(note_date, "%d-%m-%Y")  # Validate date format
+                self.default_date.set(note_date)  # Optionally update the default_date
+            except ValueError:
+                messagebox.showerror("Error", "Invalid date format. Please use DD-MM-YYYY.")
+                return
+
+        # Writing the note to the file
+        try:
+            with open(filename, "a", encoding="utf-8") as file:
+                file.write(f"{note_date}: {note}\n")
+            messagebox.showinfo("Success", "Note added successfully for " + stock_code + ".")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to add note for {stock_code}. Error: {str(e)}")
+
 
     def switch_mode(self):
         if self.mode.get() != "long":
@@ -415,13 +447,7 @@ class StockNotesApp:
             stock_code = event.widget.get(index)
             window.destroy()  # Close the selection window
 
-            # Ask user for action
-            action = messagebox.askquestion("Select Action", "Would you like to add a note or read notes for " + stock_code + "?\nYes to add a note, No to read notes.")
-            
-            if action == 'yes':
-                self.add_note_gui(stock_code=stock_code)
-            else:
-                self.read_notes_gui_for_company(stock_code)
+            self.read_notes_gui_for_company(stock_code)
 
 
 
@@ -453,8 +479,8 @@ class StockNotesApp:
             return
 
         stock_code = stock_code.upper()
-        filename_short_term = "short_term/" + stock_code + ".txt"
-        filename_long_term = "long_term/" + stock_code + ".txt"
+        filename_short_term = f"short_term/{stock_code}.txt"
+        filename_long_term = f"long_term/{stock_code}.txt"
         
         if not os.path.exists(filename_short_term) or not os.path.exists(filename_long_term):
             messagebox.showerror("Error", "Notes for this stock do not exist.")
@@ -464,8 +490,10 @@ class StockNotesApp:
         notes_window = tk.Toplevel(self.root)
         notes_window.title(f"Notes for {stock_code}")
         notes_window.geometry("1400x800")  # Adjusted size
+        
+        # Text area for displaying notes
         text_area = tk.Text(notes_window, wrap="word", height=40, width=100)  # Optionally adjust the initial size
-        text_area.pack(padx=10, pady=10, expand=True, fill=tk.BOTH)
+        text_area.pack(padx=10, pady=10, expand=True, fill=tk.BOTH, side=tk.TOP)
         
         try:
             with open(filename_short_term, "r", encoding="utf-8") as f_short, open(filename_long_term, "r", encoding="utf-8") as f_long:
@@ -477,6 +505,37 @@ class StockNotesApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to read notes for {stock_code}. Error: {str(e)}")
 
+        def refresh_notes_display():
+            """Fetch and update the notes content in the text area."""
+            text_area.config(state=tk.NORMAL)
+            text_area.delete(1.0, tk.END)  # Clear existing content
+            try:
+                with open(filename_short_term, "r", encoding="utf-8") as f_short, open(filename_long_term, "r", encoding="utf-8") as f_long:
+                    short_term_notes = f_short.read()
+                    long_term_notes = f_long.read()
+                    notes_content = f"SHORT TERM\n{short_term_notes}\n------------------------------\nLONG TERM\n{long_term_notes}"
+                    text_area.insert(tk.END, notes_content)
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to read notes for {stock_code}. Error: {str(e)}")
+            text_area.config(state=tk.DISABLED)
+        
+        refresh_notes_display()  # Initial display of notes
+        
+        # Button for adding a new note for this stock code
+        button_frame = ttk.Frame(notes_window)  # Frame to hold the button, for layout purposes
+        button_frame.pack(padx=10, pady=10, fill=tk.X, side=tk.BOTTOM)
+
+            # Frame for buttons
+        button_frame = ttk.Frame(notes_window)
+        button_frame.pack(padx=10, pady=10, fill=tk.X, side=tk.BOTTOM)
+        
+        # Button to manually refresh the notes after adding
+        refresh_button = ttk.Button(button_frame, text="Refresh Notes", command=refresh_notes_display)
+        refresh_button.pack(side=tk.LEFT, padx=10, pady=10)
+
+        # Modify the existing add note button to not immediately attempt to refresh
+        add_note_button = ttk.Button(button_frame, text="Add Note for This Stock", command=lambda: self.add_note_gui(stock_code))
+        add_note_button.pack(side=tk.RIGHT, padx=10, pady=10)
 
 def main():
     root = tk.Tk()
