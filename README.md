@@ -39,3 +39,17 @@ For more details on the application's functionality and to contribute, visit the
 Interested in further exploring or contributing to projects like StockNotes? Check out AskTheCode, a specialized GPT by OpenAI designed to assist with code analysis and more. Your active subscription also grants access to this platform.
 
 Note: The content provided here is based on the current state of the stockNotes repository and may evolve as the project develops.
+
+## Electron Frontend
+
+A minimal Electron configuration is provided in the `electron_app` folder. Run `npm install` and `npm start` inside that directory to launch the experimental interface. The Electron app communicates with the Python backend via command line calls.
+
+## Python Backend CLI
+
+Core note management logic lives in `backend.py`. You can invoke it directly for scripting:
+
+```bash
+python backend.py list
+python backend.py add-stock ABC
+python backend.py add-note ABC "my note" --date 01-01-2024
+```
