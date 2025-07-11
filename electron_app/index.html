@@ -3,11 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title>Stock Notes</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    button { display: block; margin: 5px 0; padding: 8px 12px; }
+    #output { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 15px; height: 300px; overflow-y: auto; }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <h1>StockNotes Electron UI</h1>
-    <p>This is a placeholder. React components will go here.</p>
+  <h1>Stock Notes Manager</h1>
+  <div id="status">
+    <strong>Mode:</strong> <span id="modeDisplay">undefined</span>
+    | <strong>Default Date:</strong> <span id="dateDisplay">none</span>
   </div>
+  <div id="actions">
+    <button id="setDate">Set Default Date</button>
+    <button id="switchMode">Switch Mode</button>
+    <button id="listCompanies">List All Companies</button>
+    <button id="addStock">Add New Stock Code</button>
+    <button id="addNote">Add Note</button>
+    <button id="readNotes">Read Notes</button>
+    <button id="readAll">Read All Notes</button>
+    <button id="exitApp">Exit</button>
+  </div>
+  <pre id="output"></pre>
+  <script src="renderer.js"></script>
 </body>
 </html>

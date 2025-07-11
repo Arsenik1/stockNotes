@@ -2,7 +2,8 @@
 
 ## Overview
 
-StockNotes is a Python-based application designed to help users manage notes for different stocks. It simplifies tracking stock performance and strategies by allowing users to set a default date, add new stock codes, add notes with date information, and read specific or all notes. The application supports both short-term and long-term notes, catering to various investment strategies.
+StockNotes is a Python-based application designed to help users manage notes for
+ different stocks. It simplifies tracking stock performance and strategies by allowing users to set a default date, add new stock codes, add notes with date information, and read specific or all notes. The application supports both short-term and long-term notes, catering to various investment strategies.
 
 ## Features
 
@@ -38,11 +39,9 @@ For more details on the application's functionality and to contribute, visit the
 
 Interested in further exploring or contributing to projects like StockNotes? Check out AskTheCode, a specialized GPT by OpenAI designed to assist with code analysis and more. Your active subscription also grants access to this platform.
 
-Note: The content provided here is based on the current state of the stockNotes repository and may evolve as the project develops.
-
 ## Electron Frontend
 
-A minimal Electron configuration is provided in the `electron_app` folder. Run `npm install` and `npm start` inside that directory to launch the experimental interface. The Electron app communicates with the Python backend via command line calls.
+The `electron_app` folder now contains a simple Electron interface mirroring the Tkinter UI. Run `npm install` followed by `npm start` inside that directory to launch it. Buttons in the window let you set the default date, switch modes, add stocks and notes, list companies, and read notes. The Electron renderer communicates with `backend.py` using Node's `child_process` module.
 
 ## Python Backend CLI
 
